@@ -1,10 +1,112 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <title>12 card template</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 40px;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    .radio-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      max-width: 320px;
+      margin-top: 30px;
+    }
+
+    .radio-card {
+      padding: 20px;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      background: white;
+      cursor: grab;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    }
+
+    .radio-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+    }
+
+    .radio-card:active {
+      cursor: grabbing;
+      opacity: 0.6;
+    }
+
+    .pixels-no {
+      font-size: 28px;
+      font-weight: bold;
+    }
+  </style>
 </head>
+
 <body>
+
   <h1>Hello.</h1>
-  <p>I have <b>no</b> clue what this is for.</p>
+  <p>I have <strong>no</strong> clue what this is for.</p>
+
+  <h2>Drag to Reorder Font Sizes</h2>
+
+  <div class="radio-cards" id="cardContainer">
+
+    <div class="radio-card" draggable="true">
+      <h3>SMALL</h3>
+      <p><span class="pixels-no">16</span> pixels<br>Smartphones</p>
+    </div>
+
+    <div class="radio-card" draggable="true">
+      <h3>MEDIUM</h3>
+      <p><span class="pixels-no">18</span> pixels<br>Laptops</p>
+    </div>
+
+    <div class="radio-card" draggable="true">
+      <h3>LARGE</h3>
+      <p><span class="pixels-no">20</span> pixels<br>Desktops</p>
+    </div>
+
+    <div class="radio-card" draggable="true">
+      <h3>EXTREME</h3>
+      <p><span class="pixels-no">24</span> pixels<br>4K screens</p>
+    </div>
+
+  </div>
+
+  <script>
+    const container = document.getElementById("cardContainer");
+    let draggedItem = null;
+
+    container.addEventListener("dragstart", (e) => {
+      draggedItem = e.target;
+      setTimeout(() => e.target.style.display = "none", 0);
+    });
+
+    container.addEventListener("dragend", (e) => {
+      e.target.style.display = "block";
+      draggedItem = null;
+    });
+
+    container.addEventListener("dragover", (e) => {
+      e.preventDefault();
+    });
+
+    container.addEventListener("drop", (e) => {
+      e.preventDefault();
+      const targetCard = e.target.closest(".radio-card");
+      if (targetCard && draggedItem !== targetCard) {
+        container.insertBefore(draggedItem, targetCard);
+      }
+    });
+  </script>
+
 </body>
 </html>
