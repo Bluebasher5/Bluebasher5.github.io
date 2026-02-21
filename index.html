@@ -34,6 +34,36 @@ body {
   user-select: none;
   transition: background 0.3s, color 0.3s;
 }
+
+  :root {
+  /* Yellow card colors */
+  --yellow-bg-dark: hsl(15 100% 2%);
+  --yellow-bg: hsl(30 100% 3%);
+  --yellow-bg-light: hsl(42 100% 4%);
+  --yellow-text: hsl(49 100% 83%);
+  --yellow-text-muted: hsl(49 44% 58%);
+  --yellow-highlight: hsl(49 100% 13%);
+  --yellow-border: hsl(46 100% 9%);
+  --yellow-border-muted: hsl(40 100% 7%);
+  --yellow-primary: hsl(52 100% 30%);
+  --yellow-secondary: hsl(235 100% 86%);
+  --yellow-danger: hsl(7 94% 66%);
+  --yellow-warning: hsl(53 100% 24%);
+  --yellow-success: hsl(163 100% 26%);
+  --yellow-info: hsl(217 100% 70%);
+}
+
+.card.yellow {
+  background: var(--yellow-bg-light);
+  color: var(--yellow-text);
+  border: 1px solid var(--yellow-border);
+}
+
+.card.yellow h3 { color: var(--yellow-text); }
+.card.yellow p { color: var(--yellow-text-muted); }
+.card.yellow .rank { background: var(--yellow-highlight); color: var(--yellow-text); }
+
+
 h1 { margin-bottom: 10px; color: var(--text); display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
 p { color: var(--text-muted); }
 #themeToggle { padding: 10px 20px; margin-bottom: 20px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; transition: background 0.3s, color 0.3s, transform 0.2s, box-shadow 0.2s; background: linear-gradient(145deg, var(--border-muted), var(--bg-light)); color: var(--text); box-shadow: 0 3px 8px rgba(0,0,0,0.08); }
@@ -195,6 +225,17 @@ Working effectively with others and communicating scientific ideas clearly.<br>
   
 </div>
 
+  <h2>Yellow Cards Category</h2>
+<p>Rank these separately from the blue cards.</p>
+<div class="card-container" id="yellowCardContainer">
+  <div class="card yellow"><div class="rank"></div><h3>Yellow Card 1</h3><p>Details for yellow card 1.</p></div>
+  <div class="card yellow"><div class="rank"></div><h3>Yellow Card 2</h3><p>Details for yellow card 2.</p></div>
+  <div class="card yellow"><div class="rank"></div><h3>Yellow Card 3</h3><p>Details for yellow card 3.</p></div>
+  <div class="card yellow"><div class="rank"></div><h3>Yellow Card 4</h3><p>Details for yellow card 4.</p></div>
+  <div class="card yellow"><div class="rank"></div><h3>Yellow Card 5</h3><p>Details for yellow card 5.</p></div>
+  <div class="card yellow"><div class="rank"></div><h3>Yellow Card 6</h3><p>Details for yellow card 6.</p></div>
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
@@ -333,6 +374,82 @@ submitBtn.addEventListener('click', async () => {
   alert(`Thanks ${name}! Your priorities were submitted.`);
   userNameInput.value = '';
 });
+
+  const yellowContainer = document.getElementById('yellowCardContainer');
+
+let draggedYellow = null, mouseOffsetYYellow = 0, placeholderIndexYellow = 0;
+
+function updateRanksYellow() {
+  yellowContainer.querySelectorAll('.card').forEach((c, i) => c.querySelector('.rank').textContent = i + 1);
+}
+updateRanksYellow();
+
+function startDragYellow(e, card) {
+  draggedYellow = card;
+  const rect = card.getBoundingClientRect();
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  mouseOffsetYYellow = clientY - rect.top;
+
+  draggedYellow.style.width = `${rect.width}px`;
+  draggedYellow.style.height = `${rect.height}px`;
+  draggedYellow.style.position = 'absolute';
+  draggedYellow.style.zIndex = 1000;
+  draggedYellow.style.left = `${rect.left + window.scrollX}px`;
+  draggedYellow.style.top = `${rect.top + window.scrollY}px`;
+  draggedYellow.classList.add('dragging');
+  document.body.appendChild(draggedYellow);
+  e.preventDefault();
+}
+
+function moveDragYellow(e) {
+  if (!draggedYellow) return;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  draggedYellow.style.top = `${clientY - mouseOffsetYYellow + window.scrollY}px`;
+
+  const cards = Array.from(yellowContainer.children).filter(c => c !== draggedYellow);
+  cards.forEach(c => {
+    const rect = c.getBoundingClientRect();
+    const middle = rect.top + rect.height / 2 + window.scrollY;
+    let transformY = 0;
+    const draggedIndex = Array.from(yellowContainer.children).indexOf(draggedYellow);
+    const cIndex = Array.from(yellowContainer.children).indexOf(c);
+    if (clientY + window.scrollY < middle && cIndex < draggedIndex) transformY = rect.height + 15;
+    if (clientY + window.scrollY > middle && cIndex > draggedIndex) transformY = -(rect.height + 15);
+    const current = parseFloat(c.style.transform.replace(/translateY\((.*)px\)/, '$1')) || 0;
+    c.style.transform = `translateY(${current + (transformY - current) * 0.2}px)`;
+  });
+
+  const cardRects = Array.from(yellowContainer.children).map(c => c.getBoundingClientRect());
+  placeholderIndexYellow = cardRects.findIndex(r => clientY + window.scrollY < r.top + r.height / 2 + window.scrollY);
+  if (placeholderIndexYellow === -1) placeholderIndexYellow = yellowContainer.children.length;
+}
+
+function endDragYellow() {
+  if (!draggedYellow) return;
+  const children = Array.from(yellowContainer.children);
+  yellowContainer.insertBefore(draggedYellow, children[placeholderIndexYellow] || null);
+  draggedYellow.classList.remove('dragging');
+  draggedYellow.style.position = '';
+  draggedYellow.style.width = '';
+  draggedYellow.style.height = '';
+  draggedYellow.style.left = '';
+  draggedYellow.style.top = '';
+  draggedYellow.style.zIndex = '';
+  yellowContainer.querySelectorAll('.card').forEach(c => c.style.transform = '');
+  draggedYellow = null;
+  updateRanksYellow();
+}
+
+// Add events to yellow cards
+yellowContainer.querySelectorAll('.card').forEach(card => {
+  card.addEventListener('mousedown', e => startDragYellow(e, card));
+  card.addEventListener('touchstart', e => startDragYellow(e, card), { passive: false });
+});
+
+document.addEventListener('mousemove', moveDragYellow);
+document.addEventListener('touchmove', moveDragYellow, { passive: false });
+document.addEventListener('mouseup', endDragYellow);
+document.addEventListener('touchend', endDragYellow);
 </script>
 
 </body>
