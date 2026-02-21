@@ -339,6 +339,30 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+  function applyYellowTheme(card) {
+  if (document.body.classList.contains('light')) {
+    card.style.setProperty('--yellow-bg-light', 'hsl(49 100% 90%)');
+    card.style.setProperty('--yellow-bg', 'hsl(49 100% 85%)');
+    card.style.setProperty('--yellow-bg-dark', 'hsl(49 81% 79%)');
+    card.style.setProperty('--yellow-text', 'hsl(14 100% 4%)');
+    card.style.setProperty('--yellow-text-muted', 'hsl(46 100% 9%)');
+    card.style.setProperty('--yellow-highlight', 'hsl(50 100% 74%)');
+    card.style.setProperty('--yellow-border', 'hsl(51 100% 18%)');
+    card.style.setProperty('--yellow-border-muted', 'hsl(52 100% 24%)');
+    card.style.setProperty('--yellow-primary', 'hsl(46 100% 9%)');
+  } else {
+    card.style.setProperty('--yellow-bg-light', 'hsl(42 100% 4%)');
+    card.style.setProperty('--yellow-bg', 'hsl(30 100% 3%)');
+    card.style.setProperty('--yellow-bg-dark', 'hsl(15 100% 2%)');
+    card.style.setProperty('--yellow-text', 'hsl(49 100% 83%)');
+    card.style.setProperty('--yellow-text-muted', 'hsl(49 44% 58%)');
+    card.style.setProperty('--yellow-highlight', 'hsl(49 100% 13%)');
+    card.style.setProperty('--yellow-border', 'hsl(46 100% 9%)');
+    card.style.setProperty('--yellow-border-muted', 'hsl(40 100% 7%)');
+    card.style.setProperty('--yellow-primary', 'hsl(52 100% 30%)');
+  }
+}
+  
 // Theme toggle
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 if (!prefersDark) document.body.classList.add('light');
@@ -491,34 +515,13 @@ function startDragYellow(e, card) {
   draggedYellow.style.left = `${rect.left + window.scrollX}px`;
   draggedYellow.style.top = `${rect.top + window.scrollY}px`;
 
-  // Fix for theme colors while dragging
-  if (document.body.classList.contains('light')) {
-    draggedYellow.style.setProperty('--yellow-bg-light', 'hsl(49 100% 90%)');
-    draggedYellow.style.setProperty('--yellow-bg', 'hsl(49 100% 85%)');
-    draggedYellow.style.setProperty('--yellow-bg-dark', 'hsl(49 81% 79%)');
-    draggedYellow.style.setProperty('--yellow-text', 'hsl(14 100% 4%)');
-    draggedYellow.style.setProperty('--yellow-text-muted', 'hsl(46 100% 9%)');
-    draggedYellow.style.setProperty('--yellow-highlight', 'hsl(50 100% 74%)');
-    draggedYellow.style.setProperty('--yellow-border', 'hsl(51 100% 18%)');
-    draggedYellow.style.setProperty('--yellow-border-muted', 'hsl(52 100% 24%)');
-    draggedYellow.style.setProperty('--yellow-primary', 'hsl(46 100% 9%)');
-  } else {
-    draggedYellow.style.removeProperty('--yellow-bg-light');
-    draggedYellow.style.removeProperty('--yellow-bg');
-    draggedYellow.style.removeProperty('--yellow-bg-dark');
-    draggedYellow.style.removeProperty('--yellow-text');
-    draggedYellow.style.removeProperty('--yellow-text-muted');
-    draggedYellow.style.removeProperty('--yellow-highlight');
-    draggedYellow.style.removeProperty('--yellow-border');
-    draggedYellow.style.removeProperty('--yellow-border-muted');
-    draggedYellow.style.removeProperty('--yellow-primary');
-  }
+  // Apply theme colors so card looks correct while dragging
+  applyYellowTheme(draggedYellow);
 
   draggedYellow.classList.add('dragging');
   document.body.appendChild(draggedYellow);
   e.preventDefault();
 }
-
 function moveDragYellow(e) {
   if (!draggedYellow) return;
   const clientY = e.touches ? e.touches[0].clientY : e.clientY;
@@ -546,6 +549,7 @@ function endDragYellow() {
   if (!draggedYellow) return;
   const children = Array.from(yellowContainer.children);
   yellowContainer.insertBefore(draggedYellow, children[placeholderIndexYellow] || null);
+
   draggedYellow.classList.remove('dragging');
   draggedYellow.style.position = '';
   draggedYellow.style.width = '';
@@ -554,6 +558,10 @@ function endDragYellow() {
   draggedYellow.style.top = '';
   draggedYellow.style.zIndex = '';
   yellowContainer.querySelectorAll('.card').forEach(c => c.style.transform = '');
+
+  // Clear inline theme overrides so CSS rules take over
+  draggedYellow.style.cssText = '';
+
   draggedYellow = null;
   updateRanksYellow();
 }
