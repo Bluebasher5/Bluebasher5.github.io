@@ -4,53 +4,107 @@
 <meta charset="UTF-8">
 <title>12 Card Ranking - Smooth Drag</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f4f4f4;
-    padding: 40px;
-    user-select: none; /* Prevent text selection */
-  }
+:root {
+  /* dark theme (default) */
+  --bg-dark: oklch(0.1 0.04 234);
+  --bg: oklch(0.15 0.04 234);
+  --bg-light: oklch(0.2 0.04 234);
+  --text: oklch(0.96 0.08 234);
+  --text-muted: oklch(0.76 0.08 234);
+  --highlight: oklch(0.5 0.08 234);
+  --border: oklch(0.4 0.08 234);
+  --border-muted: oklch(0.3 0.08 234);
+  --primary: oklch(0.76 0.1 234);
+  --secondary: oklch(0.76 0.1 54);
+  --danger: oklch(0.7 0.08 30);
+  --warning: oklch(0.7 0.08 100);
+  --success: oklch(0.7 0.08 160);
+  --info: oklch(0.7 0.08 260);
+}
 
-  h1 { margin-bottom: 10px; }
+body.light {
+  --bg-dark: oklch(0.92 0.04 234);
+  --bg: oklch(0.96 0.04 234);
+  --bg-light: oklch(1 0.04 234);
+  --text: oklch(0.15 0.08 234);
+  --text-muted: oklch(0.4 0.08 234);
+  --highlight: oklch(1 0.08 234);
+  --border: oklch(0.6 0.08 234);
+  --border-muted: oklch(0.7 0.08 234);
+  --primary: oklch(0.4 0.1 234);
+  --secondary: oklch(0.4 0.1 54);
+  --danger: oklch(0.5 0.08 30);
+  --warning: oklch(0.5 0.08 100);
+  --success: oklch(0.5 0.08 160);
+  --info: oklch(0.5 0.08 260);
+}
 
-  .card-container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    max-width: 400px;
-    position: relative;
-  }
+body {
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding: 40px;
+  user-select: none;
+  transition: background 0.3s, color 0.3s;
+}
 
-  .card {
-    position: relative;
-    padding: 20px;
-    border-radius: 12px;
-    background: white;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-    transition: transform 0.2s ease;
-  }
+h1 {
+  margin-bottom: 10px;
+  color: var(--text);
+}
 
-  .rank {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-weight: bold;
-    font-size: 18px;
-    background: #222;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 8px;
-  }
+p {
+  color: var(--text-muted);
+}
 
-  .dragging {
-    position: absolute;
-    z-index: 1000;
-    pointer-events: none;
-    opacity: 0.95;
-    width: 400px;
-    box-shadow: 0 15px 25px rgba(0,0,0,0.25);
-    transition: none;
-  }
+.card-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 400px;
+  position: relative;
+}
+
+.card {
+  position: relative;
+  padding: 20px;
+  border-radius: 12px;
+  background: var(--bg-light);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease;
+}
+
+.card h3 {
+  color: var(--text);
+  margin: 0 0 5px 0;
+}
+
+.card p {
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.rank {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-weight: bold;
+  font-size: 18px;
+  background: var(--highlight);
+  color: var(--text);
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.dragging {
+  position: absolute;
+  z-index: 1000;
+  pointer-events: none;
+  opacity: 0.95;
+  width: 400px;
+  box-shadow: 0 15px 25px rgba(0,0,0,0.25);
+  transition: none;
+}
 </style>
 </head>
 <body>
@@ -88,12 +142,10 @@ function updateRanks() {
 
 updateRanks();
 
-// Store the initial top positions of all cards
 function getCardPositions() {
   return Array.from(container.children).map(c => c.getBoundingClientRect().top);
 }
 
-// Drag handlers
 container.querySelectorAll('.card').forEach(card => {
   card.addEventListener('mousedown', e => {
     dragged = card;
@@ -105,10 +157,8 @@ container.querySelectorAll('.card').forEach(card => {
     dragged.style.height = `${rect.height}px`;
     dragged.classList.add('dragging');
 
-    // Put dragged card in body to overlay
     document.body.appendChild(dragged);
 
-    // Save initial card order
     cardPositions = getCardPositions();
   });
 });
@@ -116,35 +166,31 @@ container.querySelectorAll('.card').forEach(card => {
 document.addEventListener('mousemove', e => {
   if (!dragged) return;
 
-  // Move dragged card exactly under cursor
-  dragged.style.top = `${e.clientY - mouseOffsetY}px`;
+  // FIXED SCROLL BUG
+  dragged.style.top = `${e.clientY + window.scrollY - mouseOffsetY}px`;
   dragged.style.left = `${container.getBoundingClientRect().left}px`;
 
-  // Smoothly shift other cards
   const cards = Array.from(container.children);
   cards.forEach((c, index) => {
     const rect = c.getBoundingClientRect();
     const middle = rect.top + rect.height / 2;
     let transformY = 0;
 
-    if (e.clientY < middle && index < cards.indexOf(dragged)) transformY = rect.height + 15;
-    if (e.clientY > middle && index > cards.indexOf(dragged)) transformY = - (rect.height + 15);
+    if (e.clientY + window.scrollY < middle && index < cards.indexOf(dragged)) transformY = rect.height + 15;
+    if (e.clientY + window.scrollY > middle && index > cards.indexOf(dragged)) transformY = - (rect.height + 15);
 
-    // Lerp-like smooth transition
     const current = parseFloat(c.style.transform.replace(/translateY\((.*)px\)/, '$1')) || 0;
     c.style.transform = `translateY(${current + (transformY - current) * 0.2}px)`;
   });
 
-  // Determine placeholder index
   const cardRects = cards.map(c => c.getBoundingClientRect());
-  placeholderIndex = cardRects.findIndex(r => e.clientY < r.top + r.height / 2);
+  placeholderIndex = cardRects.findIndex(r => e.clientY + window.scrollY < r.top + r.height / 2);
   if (placeholderIndex === -1) placeholderIndex = cards.length;
 });
 
 document.addEventListener('mouseup', () => {
   if (!dragged) return;
 
-  // Insert dragged card into container
   const children = Array.from(container.children);
   container.insertBefore(dragged, children[placeholderIndex] || null);
 
@@ -156,7 +202,6 @@ document.addEventListener('mouseup', () => {
   dragged.style.left = '';
   dragged.style.transform = '';
 
-  // Reset transforms
   container.querySelectorAll('.card').forEach(c => c.style.transform = '');
   dragged = null;
   updateRanks();
