@@ -57,6 +57,27 @@ p {
   color: var(--text-muted);
 }
 
+#themeToggle {
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s, color 0.3s;
+  background: var(--primary);
+  color: var(--text);
+}
+
+body.light #themeToggle {
+  background: var(--border);
+  color: var(--text);
+}
+
+#themeToggle:hover {
+  background: var(--highlight);
+}
+
 .card-container {
   display: flex;
   flex-direction: column;
@@ -109,6 +130,8 @@ p {
 </head>
 <body>
 
+<button id="themeToggle">Toggle Theme</button>
+
 <h1>Rank These Items</h1>
 <p>Drag to reorder. 1 = Most Important.</p>
 
@@ -128,9 +151,18 @@ p {
 </div>
 
 <script>
+// 1️⃣ Theme detection & toggle
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+if (!prefersDark) document.body.classList.add('light');
+
+const toggleBtn = document.getElementById('themeToggle');
+toggleBtn.addEventListener('click', () => {
+  document.body.classList.toggle('light');
+});
+
+// 2️⃣ Drag-and-drop logic (with scroll fix)
 const container = document.getElementById('cardContainer');
 let dragged = null;
-let startY = 0;
 let mouseOffsetY = 0;
 let placeholderIndex = 0;
 
@@ -142,31 +174,23 @@ function updateRanks() {
 
 updateRanks();
 
-function getCardPositions() {
-  return Array.from(container.children).map(c => c.getBoundingClientRect().top);
-}
-
 container.querySelectorAll('.card').forEach(card => {
   card.addEventListener('mousedown', e => {
     dragged = card;
     const rect = card.getBoundingClientRect();
     mouseOffsetY = e.clientY - rect.top;
-    startY = rect.top;
 
     dragged.style.width = `${rect.width}px`;
     dragged.style.height = `${rect.height}px`;
     dragged.classList.add('dragging');
 
     document.body.appendChild(dragged);
-
-    cardPositions = getCardPositions();
   });
 });
 
 document.addEventListener('mousemove', e => {
   if (!dragged) return;
 
-  // FIXED SCROLL BUG
   dragged.style.top = `${e.clientY + window.scrollY - mouseOffsetY}px`;
   dragged.style.left = `${container.getBoundingClientRect().left}px`;
 
