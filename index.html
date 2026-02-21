@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta charset="UTF-8">
 <title>Please choose your priorities.</title>
 <style>
@@ -78,6 +79,27 @@ body.light #themeToggle { background: linear-gradient(145deg, var(--bg-light), v
 .rank { position: absolute; top: 10px; right: 15px; font-weight: bold; font-size: 18px; background: var(--highlight); color: var(--text); padding: 4px 8px; border-radius: 8px; }
 .dragging { position: absolute; z-index: 1000; pointer-events: none; opacity: 0.95; width: 400px; box-shadow: 0 15px 25px rgba(0,0,0,0.25); transition: none; }
 #leaderboard { margin-top: 30px; }
+
+  /* Responsive card width */
+.card-container {
+  max-width: 400px;
+  width: 95%;
+  margin: 0 auto;
+}
+
+/* Adjust dragging width on small screens */
+.card.dragging {
+  width: 95%;
+}
+
+/* Smaller font and padding on mobile */
+@media (max-width: 480px) {
+  body { padding: 20px; }
+  h1 { font-size: 1.2rem; }
+  #userName, #submitBtn, #themeToggle { font-size: 0.85rem; padding: 6px 10px; }
+  .rank { font-size: 16px; padding: 3px 6px; }
+}
+
 </style>
 </head>
 <body>
@@ -193,94 +215,115 @@ const db = getFirestore(app);
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 if (!prefersDark) document.body.classList.add('light');
 const toggleBtn = document.getElementById('themeToggle');
-toggleBtn.addEventListener('click', ()=>{ document.body.classList.toggle('light'); });
+toggleBtn.addEventListener('click', () => document.body.classList.toggle('light'));
 
 // Drag-and-drop logic
 const container = document.getElementById('cardContainer');
-let dragged=null, mouseOffsetY=0, placeholderIndex=0;
+let dragged = null, mouseOffsetY = 0, placeholderIndex = 0;
 
-function updateRanks(){ container.querySelectorAll('.card').forEach((c,i)=>c.querySelector('.rank').textContent=i+1); }
+function updateRanks() {
+  container.querySelectorAll('.card').forEach((c, i) => {
+    c.querySelector('.rank').textContent = i + 1;
+  });
+}
 updateRanks();
 
-container.querySelectorAll('.card').forEach(card=>{
-  card.addEventListener('mousedown', e=>{
-    dragged=card;
-    const rect=card.getBoundingClientRect();
-    mouseOffsetY=e.clientY-rect.top;
-    dragged.style.width=`${rect.width}px`;
-    dragged.style.height=`${rect.height}px`;
-    dragged.classList.add('dragging');
-    document.body.appendChild(dragged);
+function startDrag(e, card) {
+  dragged = card;
+  const rect = card.getBoundingClientRect();
+  mouseOffsetY = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+  dragged.style.width = `${rect.width}px`;
+  dragged.style.height = `${rect.height}px`;
+  dragged.classList.add('dragging');
+  document.body.appendChild(dragged);
+  e.preventDefault();
+}
+
+function moveDrag(e) {
+  if (!dragged) return;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  dragged.style.top = `${clientY - mouseOffsetY}px`;
+  dragged.style.left = `${container.getBoundingClientRect().left + window.scrollX}px`;
+
+  const cards = Array.from(container.children).filter(c => c !== dragged);
+  cards.forEach(c => {
+    const rect = c.getBoundingClientRect();
+    const middle = rect.top + rect.height / 2;
+    let transformY = 0;
+    const draggedIndex = Array.from(container.children).indexOf(dragged);
+    const cIndex = Array.from(container.children).indexOf(c);
+    if (clientY < middle && cIndex < draggedIndex) transformY = rect.height + 15;
+    if (clientY > middle && cIndex > draggedIndex) transformY = -(rect.height + 15);
+    const current = parseFloat(c.style.transform.replace(/translateY\((.*)px\)/, '$1')) || 0;
+    c.style.transform = `translateY(${current + (transformY - current) * 0.2}px)`;
   });
-});
 
-document.addEventListener('mousemove', e=>{
-  if(!dragged) return;
-  dragged.style.top=`${e.pageY - mouseOffsetY}px`;
-  dragged.style.left=`${container.getBoundingClientRect().left + window.scrollX}px`;
+  const cardRects = Array.from(container.children).map(c => c.getBoundingClientRect());
+  placeholderIndex = cardRects.findIndex(r => clientY < r.top + r.height / 2);
+  if (placeholderIndex === -1) placeholderIndex = container.children.length;
+}
 
-  const cards=Array.from(container.children).filter(c=>c!==dragged);
-  cards.forEach(c=>{
-    const rect=c.getBoundingClientRect();
-    const middle=rect.top+rect.height/2;
-    let transformY=0;
-    const draggedIndex=Array.from(container.children).indexOf(dragged);
-    const cIndex=Array.from(container.children).indexOf(c);
-    if(e.clientY<middle && cIndex<draggedIndex) transformY=rect.height+15;
-    if(e.clientY>middle && cIndex>draggedIndex) transformY=-(rect.height+15);
-    const current=parseFloat(c.style.transform.replace(/translateY\((.*)px\)/,'$1'))||0;
-    c.style.transform=`translateY(${current + (transformY-current)*0.2}px)`;
-  });
-
-  const cardRects=Array.from(container.children).map(c=>c.getBoundingClientRect());
-  placeholderIndex=cardRects.findIndex(r=>e.clientY<r.top+r.height/2);
-  if(placeholderIndex===-1) placeholderIndex=container.children.length;
-});
-
-document.addEventListener('mouseup', ()=>{
-  if(!dragged) return;
-  const children=Array.from(container.children);
-  container.insertBefore(dragged, children[placeholderIndex]||null);
+function endDrag() {
+  if (!dragged) return;
+  const children = Array.from(container.children);
+  container.insertBefore(dragged, children[placeholderIndex] || null);
   dragged.classList.remove('dragging');
-  dragged.style.position=''; dragged.style.width=''; dragged.style.height=''; dragged.style.top=''; dragged.style.left=''; dragged.style.transform='';
-  container.querySelectorAll('.card').forEach(c=>c.style.transform='');
-  dragged=null; updateRanks();
+  dragged.style.position = '';
+  dragged.style.width = '';
+  dragged.style.height = '';
+  dragged.style.top = '';
+  dragged.style.left = '';
+  dragged.style.transform = '';
+  container.querySelectorAll('.card').forEach(c => c.style.transform = '');
+  dragged = null;
+  updateRanks();
+}
+
+// Add drag events
+container.querySelectorAll('.card').forEach(card => {
+  card.addEventListener('mousedown', e => startDrag(e, card));
+  card.addEventListener('touchstart', e => startDrag(e, card), { passive: false });
 });
+
+document.addEventListener('mousemove', moveDrag);
+document.addEventListener('touchmove', moveDrag, { passive: false });
+document.addEventListener('mouseup', endDrag);
+document.addEventListener('touchend', endDrag);
 
 // Submission and live leaderboard
-const submitBtn=document.getElementById('submitBtn');
-const userNameInput=document.getElementById('userName');
-const leaderboardDiv=document.getElementById('leaderboard');
+const submitBtn = document.getElementById('submitBtn');
+const userNameInput = document.getElementById('userName');
+const leaderboardDiv = document.getElementById('leaderboard');
 
-async function loadLeaderboard(){
-  const snapshot = await getDocs(collection(db,"submissions"));
-  leaderboardDiv.innerHTML='';
-  snapshot.forEach(doc=>{
-    const data=doc.data();
-    const div=document.createElement('div');
-    div.textContent=`${data.name}: ${data.priorities.join(', ')}`;
+async function loadLeaderboard() {
+  const snapshot = await getDocs(collection(db, "submissions"));
+  leaderboardDiv.innerHTML = '';
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    const div = document.createElement('div');
+    div.textContent = `${data.name}: ${data.priorities.join(', ')}`;
     leaderboardDiv.appendChild(div);
   });
 }
 
 // Real-time leaderboard updates
-onSnapshot(collection(db,"submissions"), ()=>{ loadLeaderboard(); });
+onSnapshot(collection(db, "submissions"), () => loadLeaderboard());
 
-submitBtn.addEventListener('click', async ()=>{
-  const name=userNameInput.value.trim();
-  if(!name){ alert("Please enter your name!"); return; }
+submitBtn.addEventListener('click', async () => {
+  const name = userNameInput.value.trim();
+  if (!name) { alert("Please enter your name!"); return; }
 
   // Duplicate check
-  const q=query(collection(db,"submissions"), where("name","==",name));
+  const q = query(collection(db, "submissions"), where("name", "==", name));
   const snapshot = await getDocs(q);
-  if(!snapshot.empty){ alert("Someone already used this name!"); return; }
+  if (!snapshot.empty) { alert("Someone already used this name!"); return; }
 
   // Get priorities
-  const priorities=Array.from(container.children).map(c=>c.querySelector('h3').textContent);
+  const priorities = Array.from(container.children).map(c => c.querySelector('h3').textContent);
 
-  await addDoc(collection(db,"submissions"),{name,priorities});
+  await addDoc(collection(db, "submissions"), { name, priorities });
   alert(`Thanks ${name}! Your priorities were submitted.`);
-  userNameInput.value='';
+  userNameInput.value = '';
 });
 </script>
 
