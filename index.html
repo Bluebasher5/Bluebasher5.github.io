@@ -2,332 +2,163 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta charset="UTF-8">
-<title>Please choose your priorities.</title>
-<style>
-:root {
-  /* Dark theme (default) */
-  --bg-dark: oklch(0.1 0.04 234);
-  --bg: oklch(0.15 0.04 234);
-  --bg-light: oklch(0.2 0.04 234);
-  --text: oklch(0.96 0.08 234);
-  --text-muted: oklch(0.76 0.08 234);
-  --highlight: oklch(0.5 0.08 234);
-  --border: oklch(0.4 0.08 234);
-  --border-muted: oklch(0.3 0.08 234);
-  --primary: oklch(0.76 0.1 234);
+  <meta charset="UTF-8">
+  <title>Please choose your priorities.</title>
+  <style>
+    :root {
+      --bg-dark: oklch(0.1 0.04 234);
+      --bg: oklch(0.15 0.04 234);
+      --bg-light: oklch(0.2 0.04 234);
+      --text: oklch(0.96 0.08 234);
+      --text-muted: oklch(0.76 0.08 234);
+      --highlight: oklch(0.5 0.08 234);
+      --border: oklch(0.4 0.08 234);
+      --border-muted: oklch(0.3 0.08 234);
+      --primary: oklch(0.76 0.1 234);
+      --yellow-bg-dark: hsl(15 100% 2%);
+      --yellow-bg: hsl(30 100% 3%);
+      --yellow-bg-light: hsl(42 100% 4%);
+      --yellow-text: hsl(49 100% 83%);
+      --yellow-text-muted: hsl(49 44% 58%);
+      --yellow-highlight: hsl(49 100% 13%);
+      --yellow-border: hsl(46 100% 9%);
+      --yellow-border-muted: hsl(40 100% 7%);
+      --yellow-primary: hsl(52 100% 30%);
+    }
 
-  /* Yellow card colors */
-  --yellow-bg-dark: hsl(15 100% 2%);
-  --yellow-bg: hsl(30 100% 3%);
-  --yellow-bg-light: hsl(42 100% 4%);
-  --yellow-text: hsl(49 100% 83%);
-  --yellow-text-muted: hsl(49 44% 58%);
-  --yellow-highlight: hsl(49 100% 13%);
-  --yellow-border: hsl(46 100% 9%);
-  --yellow-border-muted: hsl(40 100% 7%);
-  --yellow-primary: hsl(52 100% 30%);
-}
+    body.light {
+      --bg-dark: oklch(0.92 0.04 234);
+      --bg: oklch(0.96 0.04 234);
+      --bg-light: oklch(1 0.04 234);
+      --text: oklch(0.15 0.08 234);
+      --text-muted: oklch(0.4 0.08 234);
+      --highlight: oklch(1 0.08 234);
+      --border: oklch(0.6 0.08 234);
+    }
 
-body.light {
-  --bg-dark: oklch(0.92 0.04 234);
-  --bg: oklch(0.96 0.04 234);
-  --bg-light: oklch(1 0.04 234);
-  --text: oklch(0.15 0.08 234);
-  --text-muted: oklch(0.4 0.08 234);
-  --highlight: oklch(1 0.08 234);
-  --border: oklch(0.6 0.08 234);
-}
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 40px;
+      user-select: none;
+      transition: background 0.3s, color 0.3s;
+    }
 
-body {
-  font-family: Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  padding: 40px;
-  user-select: none;
-  transition: background 0.3s, color 0.3s;
-}
+    #themeToggle {
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s, color 0.3s, transform 0.2s, box-shadow 0.2s;
+      background: linear-gradient(145deg, var(--border-muted), var(--bg-light));
+      color: var(--text);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    }
+    body.light #themeToggle { background: linear-gradient(145deg, var(--bg-light), var(--bg)); }
+    #themeToggle:hover { transform: scale(1.05); background: linear-gradient(145deg, var(--highlight), var(--primary)); box-shadow: 0 15px 25px rgba(0,0,0,0.25); }
 
-/* Buttons and input */
-#themeToggle {
-  padding: 10px 20px;
-  margin-bottom: 20px;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background 0.3s, color 0.3s, transform 0.2s, box-shadow 0.2s;
-  background: linear-gradient(145deg, var(--border-muted), var(--bg-light));
-  color: var(--text);
-  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-}
-body.light #themeToggle {
-  background: linear-gradient(145deg, var(--bg-light), var(--bg));
-  color: var(--text);
-}
-#themeToggle:hover {
-  transform: scale(1.05);
-  background: linear-gradient(145deg, var(--highlight), var(--primary));
-  box-shadow: 0 15px 25px rgba(0,0,0,0.25);
-}
+    input, textarea, button {
+      font-family: inherit;
+      outline: none;
+    }
 
-#userName {
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: 1px solid var(--border-muted);
-  background: var(--bg-light);
-  color: var(--text);
-  font-size: 0.9rem;
-  outline: none;
-  transition: border 0.2s, box-shadow 0.2s;
-}
-#userName:focus {
-  border-color: var(--highlight);
-  box-shadow: 0 0 6px var(--highlight);
-}
+    #userName, #commentBox {
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border-muted);
+      background: var(--bg-light);
+      color: var(--text);
+      font-size: 0.9rem;
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      transition: border 0.2s, box-shadow 0.2s;
+    }
 
-#submitBtn {
-  padding: 6px 12px;
-  border-radius: 8px;
-  background: var(--highlight);
-  color: var(--text);
-  border: none;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.2s, transform 0.2s;
-}
-#submitBtn:hover {
-  background: var(--primary);
-  transform: scale(1.05);
-}
+    #userName:focus, #commentBox:focus { border-color: var(--highlight); box-shadow: 0 0 6px var(--highlight); }
 
-/* Cards Row */
-.cards-row {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-  align-items: flex-start;
-  flex-wrap: wrap;
-}
+    #submitBtn {
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: var(--highlight);
+      color: var(--text);
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s, transform 0.2s;
+    }
+    #submitBtn:hover { background: var(--primary); transform: scale(1.05); }
 
-/* Columns */
-.card-container {
-  flex: 1 1 400px;
-  max-width: 400px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  position: relative;
-}
-.card-container.yellow h2 {
-  margin: 0 0 10px 0;
-  color: var(--yellow-text);
-}
-.card-container.yellow p {
-  margin: 0 0 15px 0;
-  color: var(--yellow-text-muted);
-}
+    .cards-row {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
 
-/* Cards */
-.card {
-  position: relative;
-  padding: 20px;
-  border-radius: 12px;
-  background: var(--bg-light);
-  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-  transition: transform 0.2s ease;
-}
-.card h3 {
-  margin: 0 0 5px 0;
-  color: var(--text);
-}
-.card p {
-  margin: 0;
-  color: var(--text-muted);
-}
-.card.yellow {
-  background: var(--yellow-bg-light);
-  color: var(--yellow-text);
-  border: 1px solid var(--yellow-border);
-}
-.card.yellow h3 {
-  color: var(--yellow-text);
-}
-.card.yellow p {
-  color: var(--yellow-text-muted);
-}
+    .card-container { flex: 1 1 400px; max-width: 400px; width: 100%; display: flex; flex-direction: column; gap: 15px; position: relative; }
 
-.rank {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-weight: bold;
-  font-size: 18px;
-  background: var(--highlight);
-  color: var(--text);
-  padding: 4px 8px;
-  border-radius: 8px;
-}
+    .card { position: relative; padding: 20px; border-radius: 12px; background: var(--bg-light); box-shadow: 0 3px 8px rgba(0,0,0,0.08); transition: transform 0.2s ease; }
+    .card h3 { margin: 0 0 5px 0; color: var(--text); }
+    .card p { margin: 0; color: var(--text-muted); }
 
-.card.yellow .rank {
-  color: var(--yellow-text);
-  background: var(--yellow-highlight);
-}
+    .card.yellow { background: var(--yellow-bg-light); color: var(--yellow-text); border: 1px solid var(--yellow-border); }
+    .card.yellow h3 { color: var(--yellow-text); }
+    .card.yellow p { color: var(--yellow-text-muted); }
 
-  body.light .card.yellow {
-  border: 1px solid var(--yellow-highlight);
-}
+    .rank { position: absolute; top: 10px; right: 15px; font-weight: bold; font-size: 18px; background: var(--highlight); color: var(--text); padding: 4px 8px; border-radius: 8px; }
 
-/* Dragging */
-.dragging {
-  position: absolute;
-  z-index: 1000;
-  pointer-events: none;
-  opacity: 0.95;
-  width: 100%;
-  box-shadow: 0 15px 25px rgba(0,0,0,0.25);
-  transition: none;
-}
+    .card.yellow .rank { color: var(--yellow-text); background: var(--yellow-highlight); }
+    .card.yellow.dragging { pointer-events: none; opacity: 0.95; box-shadow: 0 15px 25px rgba(0,0,0,0.25); }
 
-/* Leaderboard */
-#leaderboard {
-  margin-top: 30px;
-}
+    .dragging { position: absolute; z-index: 1000; pointer-events: none; opacity: 0.95; width: 100%; box-shadow: 0 15px 25px rgba(0,0,0,0.25); transition: none; }
 
-body.light .card-container.yellow {
-  --yellow-bg-dark: hsl(49 81% 79%);
-  --yellow-bg: hsl(49 100% 85%);
-  --yellow-bg-light: hsl(49 100% 90%);
-  --yellow-text: hsl(14 100% 4%);
-  --yellow-text-muted: hsl(46 100% 9%);
-  --yellow-highlight: hsl(50 100% 74%);
-  --yellow-border: hsl(51 100% 18%);
-  --yellow-border-muted: hsl(52 100% 24%);
-  --yellow-primary: hsl(46 100% 9%);
-}
-  
-/* Responsive */
-@media (max-width: 900px) {
-  .cards-row { flex-direction: column; gap: 15px; }
-}
-@media (max-width: 480px) {
-  body { padding: 20px; }
-  h1 { font-size: 1.2rem; }
-  #userName, #submitBtn, #themeToggle { font-size: 0.85rem; padding: 6px 10px; }
-  .rank { font-size: 16px; padding: 3px 6px; }
-}
-</style>
+    #leaderboard { margin-top: 30px; }
+
+    @media (max-width: 900px) { .cards-row { flex-direction: column; gap: 15px; } }
+    @media (max-width: 480px) { body { padding: 20px; } h1 { font-size: 1.2rem; } #userName, #submitBtn, #themeToggle { font-size: 0.85rem; padding: 6px 10px; } .rank { font-size: 16px; padding: 3px 6px; } }
+  </style>
 </head>
 <body>
 
 <button id="themeToggle">Toggle Theme</button>
 
-<h1>
-  Rank These Items
-  <input type="text" id="userName" placeholder="Your name/nickname">
-  <button id="submitBtn">Submit</button>
-</h1>
+<h1>Rank These Items</h1>
+<input type="text" id="userName" placeholder="Your name/nickname">
+
 <p>Drag to reorder. 1 Should Be Most Important.</p>
 
 <div class="cards-row">
-  <!-- Blue Cards Column -->
   <div class="card-container" id="cardContainer">
-    <div class="card"><div class="rank"></div><h3>Observing & Noticing</h3><p>Carefully noticing features, patterns and changes in the world.<br>
-• Use senses to notice details.<br>
-• Observe changes over time.<br>
-• Compare objects, materials or organisms.<br>
-• Record observations using drawings, photos or simple notes</p></div>
-
-    <div class="card"><div class="rank"></div><h3>Questioning & Curiosity</h3><p>
-Asking questions that lead to inquiry and deeper understanding.<br>
-• Ask simple 'why' and 'how' questions.<br>
-• Generate testable questions.<br>
-• Identify questions that can be investigated scientifically.<br>
-• Refine questions using evidence or prior knowledge.
-</p></div>
-
-    <div class="card"><div class="rank"></div><h3>Planning Investigations</h3><p>
-Designing methods to collect reliable, fair and meaningful data.<br>
-• Decide what to change, measure and keep the same.<br>
-• Select equipment and materials appropriately.<br>
-• Plan steps for an investigation.<br>
-• Identify risks and how to manage them.
-</p></div>
-
-    <div class="card"><div class="rank"></div><h3>Measuring & Data Collection</h3><p>
-Gathering accurate, reliable data using tools and techniques.<br>
-• Using appropriate equipment correctly.<br>
-• Choose appropriate units of measurement.<br>
-• Make repeated measurements for accuracy.<br>
-• Use digital tools (sensors, probes) to collect data.
-</p></div>
-
-    <div class="card"><div class="rank"></div><h3>Analysing & Interpreting Data</h3><p>
-Looking for patterns, trends and meaning in data.<br>
-• Construct and read tables and graphs.<br>
-• Identify patterns and anomalies.<br>
-• Use averages or simple statistics.<br>
-• Compare data sets and interpret results.
-</p></div>
-
-    <div class="card"><div class="rank"></div><h3>Using Models & Representations</h3><p>
-Creating and using diagrams, models or simulations to explain ideas.<br>
-• Build simple physical or digital models.<br>
-• Use diagrams to represent systems.<br>
-• Compare model predictions with real-world data.<br>
-• Evaluate strengths/limitations of models.
-</p></div>
-
-    <div class="card"><div class="rank"></div><h3>Scientific Reasoning & Argumentation</h3><p>
-Using evidence to make claims, explain ideas and evaluate others' arguments.<br>
-• Give reasons for predictions and conclusions.<br>
-• Use evidence to support claims.<br>
-• Evaluate alternative explanations.<br>
-• Challenge misinformation using scientific reasoning.
-</p></div>
-
-    <div class="card"><div class="rank"></div><h3>Evaluating Methods</h3><p>
-Reflecting on how an investigation was carried out and how it could improve.<br>
-• Identify sources of error.<br>
-• Suggest improvements.<br>
-• Evaluate accuracy, reliability and fairness.<br>
-• Judge whether evidence supports conclusions.
-</p></div>
-
-    <div class="card"><div class="rank"></div><h3>Ethics & Responsible Practice</h3><p>
-Working safely, ethically and responsibly when doing science.<br>
-• Handle equipment safely.<br>
-• Show care for living things.<br>
-• Consider consent, harm and fairness.<br>
-• Apply ethical thinking to real-world issues.
-</p></div>
-
-    <div class="card"><div class="rank"></div><h3>Collaboration & Communication</h3><p>
-Working effectively with others and communicating scientific ideas clearly.<br>
-• Share ideas and listen to others.<br>
-• Record findings clearly.<br>
-• Use scientific vocabulary appropriately.<br>
-• Present scientific explanations in different formats.
-</p></div>
+    <div class="card"><div class="rank"></div><h3>Observing & Noticing</h3><p>Carefully noticing features, patterns and changes in the world.<br>• Use senses to notice details.<br>• Observe changes over time.<br>• Compare objects, materials or organisms.<br>• Record observations using drawings, photos or simple notes</p></div>
+    <div class="card"><div class="rank"></div><h3>Questioning & Curiosity</h3><p>Asking questions that lead to inquiry and deeper understanding.<br>• Ask simple 'why' and 'how' questions.<br>• Generate testable questions.<br>• Identify questions that can be investigated scientifically.<br>• Refine questions using evidence or prior knowledge.</p></div>
+    <div class="card"><div class="rank"></div><h3>Planning Investigations</h3><p>Designing methods to collect reliable, fair and meaningful data.<br>• Decide what to change, measure and keep the same.<br>• Select equipment and materials appropriately.<br>• Plan steps for an investigation.<br>• Identify risks and how to manage them.</p></div>
+    <div class="card"><div class="rank"></div><h3>Measuring & Data Collection</h3><p>Gathering accurate, reliable data using tools and techniques.<br>• Using appropriate equipment correctly.<br>• Choose appropriate units of measurement.<br>• Make repeated measurements for accuracy.<br>• Use digital tools (sensors, probes) to collect data.</p></div>
   </div>
 
-  <!-- Yellow Cards Column -->
   <div class="card-container yellow" id="yellowCardContainer">
     <div class="card yellow"><div class="rank"></div><h3>Yellow Card 1</h3><p>Details for yellow card 1.</p></div>
     <div class="card yellow"><div class="rank"></div><h3>Yellow Card 2</h3><p>Details for yellow card 2.</p></div>
-    <div class="card yellow"><div class="rank"></div><h3>Yellow Card 3</h3><p>Details for yellow card 3.</p></div>
-    <div class="card yellow"><div class="rank"></div><h3>Yellow Card 4</h3><p>Details for yellow card 4.</p></div>
-    <div class="card yellow"><div class="rank"></div><h3>Yellow Card 5</h3><p>Details for yellow card 5.</p></div>
-    <div class="card yellow"><div class="rank"></div><h3>Yellow Card 6</h3><p>Details for yellow card 6.</p></div>
   </div>
 </div>
+
+<h2>Comment</h2>
+<p>Comment You can include an optional comment</p>
+<textarea id="commentBox" placeholder="Comment" rows="4"></textarea>
+
+<button id="submitBtn">Submit</button>
+
+<div id="leaderboard"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyCFuF9IGUQXo6y_3DS6yK7sUsRPGvubLec",
   authDomain: "cardrank-8902d.firebaseapp.com",
@@ -339,228 +170,55 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Theme toggle
-const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-if (!prefersDark) document.body.classList.add('light');
-const toggleBtn = document.getElementById('themeToggle');
-toggleBtn.addEventListener('click', () => document.body.classList.toggle('light'));
+// Theme
+if (!window.matchMedia('(prefers-color-scheme: dark)').matches) document.body.classList.add('light');
+document.getElementById('themeToggle').addEventListener('click', () => document.body.classList.toggle('light'));
 
-// Drag-and-drop
-const container = document.getElementById('cardContainer');
-container.style.margin = "0";            // left aligned
-container.style.width = "400px";         // fixed width for desktop
-
-let dragged = null, mouseOffsetY = 0, placeholderIndex = 0;
-
-function updateRanks() {
-  container.querySelectorAll('.card').forEach((c, i) => c.querySelector('.rank').textContent = i + 1);
-}
-updateRanks();
-
-function startDrag(e, card) {
-  dragged = card;
-  const rect = card.getBoundingClientRect();
-  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
-  mouseOffsetY = clientY - rect.top;
-
-  dragged.style.width = `${rect.width}px`;
-  dragged.style.height = `${rect.height}px`;
-  dragged.style.position = 'absolute';
-  dragged.style.zIndex = 1000;
-
-  // Start at current position (locked horizontally)
-  dragged.style.left = `${rect.left + window.scrollX}px`;
-  dragged.style.top = `${rect.top + window.scrollY}px`;
-
-  dragged.classList.add('dragging');
-  document.body.appendChild(dragged);
-  e.preventDefault();
-}
-
-function moveDrag(e) {
-  if (!dragged) return;
-  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
-  // Only vertical movement
-  dragged.style.top = `${clientY - mouseOffsetY + window.scrollY}px`;
-
-  const cards = Array.from(container.children).filter(c => c !== dragged);
-  cards.forEach(c => {
-    const rect = c.getBoundingClientRect();
-    const middle = rect.top + rect.height / 2 + window.scrollY;
-    let transformY = 0;
-    const draggedIndex = Array.from(container.children).indexOf(dragged);
-    const cIndex = Array.from(container.children).indexOf(c);
-    if (clientY + window.scrollY < middle && cIndex < draggedIndex) transformY = rect.height + 15;
-    if (clientY + window.scrollY > middle && cIndex > draggedIndex) transformY = -(rect.height + 15);
-    const current = parseFloat(c.style.transform.replace(/translateY\((.*)px\)/, '$1')) || 0;
-    c.style.transform = `translateY(${current + (transformY - current) * 0.2}px)`;
-  });
-
-  const cardRects = Array.from(container.children).map(c => c.getBoundingClientRect());
-  placeholderIndex = cardRects.findIndex(r => clientY + window.scrollY < r.top + r.height / 2 + window.scrollY);
-  if (placeholderIndex === -1) placeholderIndex = container.children.length;
-}
-
-function endDrag() {
-  if (!dragged) return;
-  const children = Array.from(container.children);
-  container.insertBefore(dragged, children[placeholderIndex] || null);
-  dragged.classList.remove('dragging');
-  dragged.style.position = '';
-  dragged.style.width = '';
-  dragged.style.height = '';
-  dragged.style.left = '';
-  dragged.style.top = '';
-  dragged.style.zIndex = '';
-  container.querySelectorAll('.card').forEach(c => c.style.transform = '');
-  dragged = null;
+// Drag-and-drop logic (same as your previous code, works for both blue and yellow cards)
+const cardContainers = [document.getElementById('cardContainer'), document.getElementById('yellowCardContainer')];
+cardContainers.forEach(container => {
+  let dragged = null, offsetY = 0, placeholderIndex = 0;
+  function updateRanks() { container.querySelectorAll('.card').forEach((c,i)=>c.querySelector('.rank').textContent=i+1); }
   updateRanks();
-}
-
-// Add events
-container.querySelectorAll('.card').forEach(card => {
-  card.addEventListener('mousedown', e => startDrag(e, card));
-  card.addEventListener('touchstart', e => startDrag(e, card), { passive: false });
+  function startDrag(e, card){ dragged=card; const rect=card.getBoundingClientRect(); const clientY=e.touches?e.touches[0].clientY:e.clientY; offsetY=clientY-rect.top; dragged.style.width=`${rect.width}px`; dragged.style.height=`${rect.height}px`; dragged.style.position='absolute'; dragged.style.zIndex=1000; dragged.style.left=`${rect.left+window.scrollX}px`; dragged.style.top=`${rect.top+window.scrollY}px`; dragged.classList.add('dragging'); document.body.appendChild(dragged); e.preventDefault(); }
+  function moveDrag(e){ if(!dragged)return; const clientY=e.touches?e.touches[0].clientY:e.clientY; dragged.style.top=`${clientY-offsetY+window.scrollY}px`; const cards=Array.from(container.children).filter(c=>c!==dragged); cards.forEach(c=>{ const rect=c.getBoundingClientRect(); const middle=rect.top+rect.height/2+window.scrollY; const draggedIndex=Array.from(container.children).indexOf(dragged); const cIndex=Array.from(container.children).indexOf(c); let transformY=0; if(clientY+window.scrollY<middle&&cIndex<draggedIndex)transformY=rect.height+15; if(clientY+window.scrollY>middle&&cIndex>draggedIndex)transformY=-(rect.height+15); const current=parseFloat(c.style.transform.replace(/translateY\((.*)px\)/,'$1'))||0; c.style.transform=`translateY(${current+(transformY-current)*0.2}px)`; }); const cardRects=Array.from(container.children).map(c=>c.getBoundingClientRect()); placeholderIndex=cardRects.findIndex(r=>clientY+window.scrollY<r.top+r.height/2+window.scrollY); if(placeholderIndex===-1)placeholderIndex=container.children.length; }
+  function endDrag(){ if(!dragged)return; const children=Array.from(container.children); container.insertBefore(dragged, children[placeholderIndex]||null); dragged.classList.remove('dragging'); dragged.style.position=''; dragged.style.width=''; dragged.style.height=''; dragged.style.left=''; dragged.style.top=''; dragged.style.zIndex=''; container.querySelectorAll('.card').forEach(c=>c.style.transform=''); dragged=null; updateRanks(); }
+  container.querySelectorAll('.card').forEach(card=>{ card.addEventListener('mousedown', e=>startDrag(e, card)); card.addEventListener('touchstart', e=>startDrag(e, card), {passive:false}); });
+  document.addEventListener('mousemove', moveDrag); document.addEventListener('touchmove', moveDrag,{passive:false}); document.addEventListener('mouseup', endDrag); document.addEventListener('touchend', endDrag);
 });
 
-document.addEventListener('mousemove', moveDrag);
-document.addEventListener('touchmove', moveDrag, { passive: false });
-document.addEventListener('mouseup', endDrag);
-document.addEventListener('touchend', endDrag);
-
-// Submission & leaderboard
-const submitBtn = document.getElementById('submitBtn');
-const userNameInput = document.getElementById('userName');
-const leaderboardDiv = document.getElementById('leaderboard');
-
-async function loadLeaderboard() {
-  const snapshot = await getDocs(collection(db, "submissions"));
-  leaderboardDiv.innerHTML = '';
-  snapshot.forEach(doc => {
-    const data = doc.data();
-    const div = document.createElement('div');
-    div.textContent = `${data.name}: ${data.priorities.join(', ')}`;
-    leaderboardDiv.appendChild(div);
-  });
-}
-
-// Live updates
-onSnapshot(collection(db, "submissions"), () => { loadLeaderboard(); });
-
+// Submission
+const submitBtn = document.querySelector('#submitBtn');
 submitBtn.addEventListener('click', async () => {
-  const name = userNameInput.value.trim();
-  if (!name) { alert("Please enter your name/nickname!"); return; }
+  const name = document.querySelector('#userName').value.trim();
+  const comment = document.querySelector('#commentBox').value.trim();
+  if(!name){ alert("Please enter your name!"); return; }
+  const qSnap = await getDocs(query(collection(db,"submissions"), where("name","==",name)));
+  if(!qSnap.empty){ alert("Name already used!"); return; }
 
-  const qSnap = await getDocs(query(collection(db, "submissions"), where("name", "==", name)));
-  if (!qSnap.empty) { alert("Someone already used this name!"); return; }
+  const priorities = Array.from(document.getElementById('cardContainer').children).map(c=>c.querySelector('h3').textContent);
+  const yellowPriorities = Array.from(document.getElementById('yellowCardContainer').children).map(c=>c.querySelector('h3').textContent);
 
-  const priorities = Array.from(container.children).map(c => c.querySelector('h3').textContent);
-  const yellowPriorities = Array.from(yellowContainer.children).map(c => c.querySelector('h3').textContent);
-  
-  await addDoc(collection(db, "submissions"), { 
-  name, 
-  priorities, 
-  yellowPriorities 
-});
-  await addDoc(collection(db, "submissions"), { name, priorities });
+  await addDoc(collection(db,"submissions"), { name, priorities, yellowPriorities, comment });
+
   alert(`Thanks ${name}! Your priorities were submitted.`);
-  userNameInput.value = '';
+  document.querySelector('#userName').value = '';
+  document.querySelector('#commentBox').value = '';
 });
 
-  const yellowContainer = document.getElementById('yellowCardContainer');
-
-let draggedYellow = null, mouseOffsetYYellow = 0, placeholderIndexYellow = 0;
-
-function updateRanksYellow() {
-  yellowContainer.querySelectorAll('.card').forEach((c, i) => c.querySelector('.rank').textContent = i + 1);
-}
-updateRanksYellow();
-
-function startDragYellow(e, card) {
-  draggedYellow = card;
-
-  // Copy container's computed yellow vars to the card itself
-  const containerStyles = getComputedStyle(yellowContainer);
-  [
-    '--yellow-bg-dark',
-    '--yellow-bg',
-    '--yellow-bg-light',
-    '--yellow-text',
-    '--yellow-text-muted',
-    '--yellow-highlight',
-    '--yellow-border',
-    '--yellow-border-muted',
-    '--yellow-primary'
-  ].forEach(varName => {
-    draggedYellow.style.setProperty(varName, containerStyles.getPropertyValue(varName));
+// Leaderboard
+const leaderboardDiv = document.getElementById('leaderboard');
+onSnapshot(collection(db,"submissions"), () => {
+  leaderboardDiv.innerHTML = '';
+  getDocs(collection(db,"submissions")).then(snapshot=>{
+    snapshot.forEach(doc=>{
+      const data=doc.data();
+      const div=document.createElement('div');
+      div.textContent=`${data.name}: ${data.priorities.join(', ')} | ${data.yellowPriorities.join(', ')} | Comment: ${data.comment||''}`;
+      leaderboardDiv.appendChild(div);
+    });
   });
-
-  const rect = card.getBoundingClientRect();
-  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-  mouseOffsetYYellow = clientY - rect.top;
-
-  draggedYellow.style.width = `${rect.width}px`;
-  draggedYellow.style.height = `${rect.height}px`;
-  draggedYellow.style.position = 'absolute';
-  draggedYellow.style.zIndex = 1000;
-  draggedYellow.style.left = `${rect.left + window.scrollX}px`;
-  draggedYellow.style.top = `${rect.top + window.scrollY}px`;
-  draggedYellow.classList.add('dragging');
-  document.body.appendChild(draggedYellow);
-  e.preventDefault();
-}
-
-function moveDragYellow(e) {
-  if (!draggedYellow) return;
-  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-  draggedYellow.style.top = `${clientY - mouseOffsetYYellow + window.scrollY}px`;
-
-  const cards = Array.from(yellowContainer.children).filter(c => c !== draggedYellow);
-  cards.forEach(c => {
-    const rect = c.getBoundingClientRect();
-    const middle = rect.top + rect.height / 2 + window.scrollY;
-    let transformY = 0;
-    const draggedIndex = Array.from(yellowContainer.children).indexOf(draggedYellow);
-    const cIndex = Array.from(yellowContainer.children).indexOf(c);
-    if (clientY + window.scrollY < middle && cIndex < draggedIndex) transformY = rect.height + 15;
-    if (clientY + window.scrollY > middle && cIndex > draggedIndex) transformY = -(rect.height + 15);
-    const current = parseFloat(c.style.transform.replace(/translateY\((.*)px\)/, '$1')) || 0;
-    c.style.transform = `translateY(${current + (transformY - current) * 0.2}px)`;
-  });
-
-  const cardRects = Array.from(yellowContainer.children).map(c => c.getBoundingClientRect());
-  placeholderIndexYellow = cardRects.findIndex(r => clientY + window.scrollY < r.top + r.height / 2 + window.scrollY);
-  if (placeholderIndexYellow === -1) placeholderIndexYellow = yellowContainer.children.length;
-}
-
-function endDragYellow() {
-  if (!draggedYellow) return;
-  const children = Array.from(yellowContainer.children);
-  yellowContainer.insertBefore(draggedYellow, children[placeholderIndexYellow] || null);
-  draggedYellow.classList.remove('dragging');
-  draggedYellow.style.position = '';
-  draggedYellow.style.width = '';
-  draggedYellow.style.height = '';
-  draggedYellow.style.left = '';
-  draggedYellow.style.top = '';
-  draggedYellow.style.zIndex = '';
-  yellowContainer.querySelectorAll('.card').forEach(c => c.style.transform = '');
-  draggedYellow = null;
-  updateRanksYellow();
-}
-
-// Add events to yellow cards
-yellowContainer.querySelectorAll('.card').forEach(card => {
-  card.addEventListener('mousedown', e => startDragYellow(e, card));
-  card.addEventListener('touchstart', e => startDragYellow(e, card), { passive: false });
 });
-
-document.addEventListener('mousemove', moveDragYellow);
-document.addEventListener('touchmove', moveDragYellow, { passive: false });
-document.addEventListener('mouseup', endDragYellow);
-document.addEventListener('touchend', endDragYellow);
 </script>
 
 </body>
