@@ -480,23 +480,6 @@ updateRanksYellow();
 
 function startDragYellow(e, card) {
   draggedYellow = card;
-
-  // Copy container's computed yellow vars to the card itself
-  const containerStyles = getComputedStyle(yellowContainer);
-  [
-    '--yellow-bg-dark',
-    '--yellow-bg',
-    '--yellow-bg-light',
-    '--yellow-text',
-    '--yellow-text-muted',
-    '--yellow-highlight',
-    '--yellow-border',
-    '--yellow-border-muted',
-    '--yellow-primary'
-  ].forEach(varName => {
-    draggedYellow.style.setProperty(varName, containerStyles.getPropertyValue(varName));
-  });
-
   const rect = card.getBoundingClientRect();
   const clientY = e.touches ? e.touches[0].clientY : e.clientY;
   mouseOffsetYYellow = clientY - rect.top;
