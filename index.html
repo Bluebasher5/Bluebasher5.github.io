@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>12 card template</title>
+  <title>12 Card Ranking</title>
 
   <style>
     body {
@@ -15,17 +15,17 @@
       margin-bottom: 10px;
     }
 
-    .radio-cards {
+    .card-container {
       display: flex;
       flex-direction: column;
       gap: 15px;
-      max-width: 320px;
+      max-width: 400px;
       margin-top: 30px;
     }
 
-    .radio-card {
+    .card {
+      position: relative;
       padding: 20px;
-      border: 2px solid #ddd;
       border-radius: 12px;
       background: white;
       cursor: grab;
@@ -33,51 +33,49 @@
       box-shadow: 0 3px 8px rgba(0,0,0,0.08);
     }
 
-    .radio-card:hover {
+    .card:hover {
       transform: translateY(-3px);
       box-shadow: 0 6px 14px rgba(0,0,0,0.12);
     }
 
-    .radio-card:active {
+    .card:active {
       cursor: grabbing;
       opacity: 0.6;
     }
 
-    .pixels-no {
-      font-size: 28px;
+    .rank {
+      position: absolute;
+      top: 10px;
+      right: 15px;
       font-weight: bold;
+      font-size: 18px;
+      background: #222;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 8px;
     }
   </style>
 </head>
 
 <body>
 
-  <h1>Hello.</h1>
-  <p>I have <strong>no</strong> clue what this is for.</p>
+  <h1>Rank These Items</h1>
+  <p>Drag to reorder. 1 = Most Important.</p>
 
-  <h2>Drag to Reorder Font Sizes</h2>
+  <div class="card-container" id="cardContainer">
 
-  <div class="radio-cards" id="cardContainer">
-
-    <div class="radio-card" draggable="true">
-      <h3>SMALL</h3>
-      <p><span class="pixels-no">16</span> pixels<br>Smartphones</p>
-    </div>
-
-    <div class="radio-card" draggable="true">
-      <h3>MEDIUM</h3>
-      <p><span class="pixels-no">18</span> pixels<br>Laptops</p>
-    </div>
-
-    <div class="radio-card" draggable="true">
-      <h3>LARGE</h3>
-      <p><span class="pixels-no">20</span> pixels<br>Desktops</p>
-    </div>
-
-    <div class="radio-card" draggable="true">
-      <h3>EXTREME</h3>
-      <p><span class="pixels-no">24</span> pixels<br>4K screens</p>
-    </div>
+    <div class="card" draggable="true"><div class="rank"></div><h3>Card 1</h3><p>I dont know what to put here!.</p></div>
+    <div class="card" draggable="true"><div class="rank"></div><h3>Card 2</h3><p>Description text here.</p></div>
+    <div class="card" draggable="true"><div class="rank"></div><h3>Card 3</h3><p>Description text here.</p></div>
+    <div class="card" draggable="true"><div class="rank"></div><h3>Card 4</h3><p>Description text here.</p></div>
+    <div class="card" draggable="true"><div class="rank"></div><h3>Card 5</h3><p>Whats this for?</p></div>
+    <div class="card" draggable="true"><div class="rank"></div><h3>Card 6</h3><p>Description text here.</p></div>
+    <div class="card" draggable="true"><div class="rank"></div><h3>Card 7</h3><p>Description text here.</p></div>
+    <div class="card" draggable="true"><div class="rank"></div><h3>Card 8</h3><p>Hi!!!!</p></div>
+    <div class="card" draggable="true"><div class="rank"></div><h3>Card 9</h3><p>Description text here.</p></div>
+    <div class="card" draggable="true"><div class="rank"></div><h3>Card 10</h3><p>Description text here.</p></div>
+    <div class="card" draggable="true"><div class="rank"></div><h3>Card 11</h3><p>Description text here.</p></div>
+    <div class="card" draggable="true"><div class="rank"></div><h3>Card 12</h3><p>Description text here.</p></div>
 
   </div>
 
@@ -85,14 +83,24 @@
     const container = document.getElementById("cardContainer");
     let draggedItem = null;
 
+    function updateRanks() {
+      const cards = container.querySelectorAll(".card");
+      cards.forEach((card, index) => {
+        card.querySelector(".rank").textContent = index + 1;
+      });
+    }
+
+    updateRanks();
+
     container.addEventListener("dragstart", (e) => {
-      draggedItem = e.target;
-      setTimeout(() => e.target.style.display = "none", 0);
+      draggedItem = e.target.closest(".card");
+      setTimeout(() => draggedItem.style.display = "none", 0);
     });
 
-    container.addEventListener("dragend", (e) => {
-      e.target.style.display = "block";
+    container.addEventListener("dragend", () => {
+      draggedItem.style.display = "block";
       draggedItem = null;
+      updateRanks();
     });
 
     container.addEventListener("dragover", (e) => {
@@ -101,7 +109,7 @@
 
     container.addEventListener("drop", (e) => {
       e.preventDefault();
-      const targetCard = e.target.closest(".radio-card");
+      const targetCard = e.target.closest(".card");
       if (targetCard && draggedItem !== targetCard) {
         container.insertBefore(draggedItem, targetCard);
       }
