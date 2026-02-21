@@ -170,6 +170,11 @@ body.light #themeToggle {
   border-radius: 8px;
 }
 
+.card.yellow.rank {
+  color: var(--yellow-text); /* yellow text */
+  background: var(--yellow-highlight); /* matching yellow box */
+}
+
 /* Dragging */
 .dragging {
   position: absolute;
@@ -186,6 +191,18 @@ body.light #themeToggle {
   margin-top: 30px;
 }
 
+body.light .card-container.yellow {
+  --yellow-bg-dark: hsl(49 81% 79%);
+  --yellow-bg: hsl(49 100% 85%);
+  --yellow-bg-light: hsl(49 100% 90%);
+  --yellow-text: hsl(14 100% 4%);
+  --yellow-text-muted: hsl(46 100% 9%);
+  --yellow-highlight: hsl(50 100% 74%);
+  --yellow-border: hsl(51 100% 18%);
+  --yellow-border-muted: hsl(52 100% 24%);
+  --yellow-primary: hsl(46 100% 9%);
+}
+  
 /* Responsive */
 @media (max-width: 900px) {
   .cards-row { flex-direction: column; gap: 15px; }
@@ -435,7 +452,10 @@ submitBtn.addEventListener('click', async () => {
   const qSnap = await getDocs(query(collection(db, "submissions"), where("name", "==", name)));
   if (!qSnap.empty) { alert("Someone already used this name!"); return; }
 
-  const priorities = Array.from(container.children).map(c => c.querySelector('h3').textContent);
+  const priorities = [
+    ...Array.from(container.children),
+    ...Array.from(yellowContainer.children)
+  ].map(c => c.querySelector('h3').textContent);
   await addDoc(collection(db, "submissions"), { name, priorities });
   alert(`Thanks ${name}! Your priorities were submitted.`);
   userNameInput.value = '';
