@@ -200,25 +200,32 @@ container.querySelectorAll('.card').forEach(card => {
 document.addEventListener('mousemove', e => {
   if (!dragged) return;
 
-  dragged.style.top = `${e.clientY + window.scrollY - mouseOffsetY}px`;
-  dragged.style.left = `${container.getBoundingClientRect().left}px`;
+  dragged.style.top = `${e.pageY - mouseOffsetY}px`; // pageY includes scroll
+  dragged.style.left = `${container.getBoundingClientRect().left + window.scrollX}px`;
 
-  const cards = Array.from(container.children);
+  const cards = Array.from(container.children).filter(c => c !== dragged);
+
   cards.forEach((c, index) => {
     const rect = c.getBoundingClientRect();
     const middle = rect.top + rect.height / 2;
-    let transformY = 0;
 
-    if (e.clientY + window.scrollY < middle && index < cards.indexOf(dragged)) transformY = rect.height + 15;
-    if (e.clientY + window.scrollY > middle && index > cards.indexOf(dragged)) transformY = - (rect.height + 15);
+    let transformY = 0;
+    const draggedRect = dragged.getBoundingClientRect();
+
+    if (e.clientY < middle && index < Array.from(container.children).indexOf(dragged)) {
+      transformY = rect.height + 15;
+    }
+    if (e.clientY > middle && index > Array.from(container.children).indexOf(dragged)) {
+      transformY = - (rect.height + 15);
+    }
 
     const current = parseFloat(c.style.transform.replace(/translateY\((.*)px\)/, '$1')) || 0;
     c.style.transform = `translateY(${current + (transformY - current) * 0.2}px)`;
   });
 
-  const cardRects = cards.map(c => c.getBoundingClientRect());
-  placeholderIndex = cardRects.findIndex(r => e.clientY + window.scrollY < r.top + r.height / 2);
-  if (placeholderIndex === -1) placeholderIndex = cards.length;
+  const cardRects = Array.from(container.children).map(c => c.getBoundingClientRect());
+  placeholderIndex = cardRects.findIndex(r => e.clientY < r.top + r.height / 2);
+  if (placeholderIndex === -1) placeholderIndex = container.children.length;
 });
 
 document.addEventListener('mouseup', () => {
