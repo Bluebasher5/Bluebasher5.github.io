@@ -219,7 +219,10 @@ toggleBtn.addEventListener('click', () => document.body.classList.toggle('light'
 
 // Drag-and-drop
 const container = document.getElementById('cardContainer');
-let dragged = null, mouseOffsetX = 0, mouseOffsetY = 0, placeholderIndex = 0;
+container.style.margin = "0";            // left aligned
+container.style.width = "400px";         // fixed width for desktop
+
+let dragged = null, mouseOffsetY = 0, placeholderIndex = 0;
 
 function updateRanks() {
   container.querySelectorAll('.card').forEach((c, i) => c.querySelector('.rank').textContent = i + 1);
@@ -229,10 +232,8 @@ updateRanks();
 function startDrag(e, card) {
   dragged = card;
   const rect = card.getBoundingClientRect();
-  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
   const clientY = e.touches ? e.touches[0].clientY : e.clientY;
 
-  mouseOffsetX = clientX - rect.left;
   mouseOffsetY = clientY - rect.top;
 
   dragged.style.width = `${rect.width}px`;
@@ -240,6 +241,7 @@ function startDrag(e, card) {
   dragged.style.position = 'absolute';
   dragged.style.zIndex = 1000;
 
+  // Start at current position (locked horizontally)
   dragged.style.left = `${rect.left + window.scrollX}px`;
   dragged.style.top = `${rect.top + window.scrollY}px`;
 
@@ -250,10 +252,9 @@ function startDrag(e, card) {
 
 function moveDrag(e) {
   if (!dragged) return;
-  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
   const clientY = e.touches ? e.touches[0].clientY : e.clientY;
 
-  dragged.style.left = `${clientX - mouseOffsetX + window.scrollX}px`;
+  // Only vertical movement
   dragged.style.top = `${clientY - mouseOffsetY + window.scrollY}px`;
 
   const cards = Array.from(container.children).filter(c => c !== dragged);
