@@ -86,6 +86,22 @@ body.light #themeToggle {
   box-shadow: 0 0 6px var(--highlight);
 }
 
+  #userComment {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-muted);
+  background: var(--bg-light);
+  color: var(--text);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+  margin-left: 10px;
+}
+#userComment:focus {
+  border-color: var(--highlight);
+  box-shadow: 0 0 6px var(--highlight);
+}
+
 #submitBtn {
   padding: 6px 12px;
   border-radius: 8px;
@@ -228,6 +244,14 @@ body.light .card-container.yellow {
   <input type="text" id="userName" placeholder="Your name/nickname">
   <button id="submitBtn">Submit</button>
 </h1>
+
+<h1>
+  Rank These Items
+  <input type="text" id="userName" placeholder="Your name/nickname">
+  <input type="text" id="userComment" placeholder="Optional comment">
+  <button id="submitBtn">Submit</button>
+</h1>
+  
 <p>Drag to reorder. 1 Should Be Most Important.</p>
 
 <div class="cards-row">
@@ -473,8 +497,11 @@ async function loadLeaderboard() {
 // Live updates
 onSnapshot(collection(db, "submissions"), () => { loadLeaderboard(); });
 
+const userCommentInput = document.getElementById('userComment');
+
 submitBtn.addEventListener('click', async () => {
   const name = userNameInput.value.trim();
+  const comment = userCommentInput.value.trim(); // NEW
   if (!name) { alert("Please enter your name/nickname!"); return; }
 
   const qSnap = await getDocs(query(collection(db, "submissions"), where("name", "==", name)));
@@ -484,13 +511,15 @@ submitBtn.addEventListener('click', async () => {
   const yellowPriorities = Array.from(yellowContainer.children).map(c => c.querySelector('h3').textContent);
   
   await addDoc(collection(db, "submissions"), { 
-  name, 
-  priorities, 
-  yellowPriorities 
-});
-  await addDoc(collection(db, "submissions"), { name, priorities });
+    name, 
+    priorities, 
+    yellowPriorities,
+    comment // NEW
+  });
+
   alert(`Thanks ${name}! Your priorities were submitted.`);
   userNameInput.value = '';
+  userCommentInput.value = ''; // clear comment box after submission
 });
 
   const yellowContainer = document.getElementById('yellowCardContainer');
