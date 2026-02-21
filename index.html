@@ -130,6 +130,32 @@ body.light #themeToggle { background: linear-gradient(145deg, var(--bg-light), v
   .rank { font-size: 16px; padding: 3px 6px; }
 }
 
+  .cards-row {
+  display: flex;
+  gap: 20px;
+  justify-content: center; /* center both lists horizontally */
+  flex-wrap: wrap; /* wrap on small screens */
+}
+
+/* Adjust each card container */
+.card-container {
+  max-width: 400px;
+  width: 100%;
+}
+
+/* Optional: distinguish yellow container visually */
+.card-container.yellow {
+  /* keeps the yellow card styling intact */
+}
+
+/* Responsive for mobile: stack vertically */
+@media (max-width: 900px) {
+  .cards-row {
+    flex-direction: column;
+    gap: 15px;
+  }
+}
+  
 </style>
 </head>
 <body>
@@ -143,6 +169,7 @@ body.light #themeToggle { background: linear-gradient(145deg, var(--bg-light), v
 </h1>
 <p>Drag to reorder. 1 Should Be Most Important.</p>
 
+<div class="cards-row">
 <div class="card-container" id="cardContainer">
   <div class="card"><div class="rank"></div><h3>Observing & Noticing</h3><p>Carefully noticing features, patterns and changes in the world.<br>
 • Use senses to notice details.<br>
@@ -234,6 +261,7 @@ Working effectively with others and communicating scientific ideas clearly.<br>
   <div class="card yellow"><div class="rank"></div><h3>Yellow Card 4</h3><p>Details for yellow card 4.</p></div>
   <div class="card yellow"><div class="rank"></div><h3>Yellow Card 5</h3><p>Details for yellow card 5.</p></div>
   <div class="card yellow"><div class="rank"></div><h3>Yellow Card 6</h3><p>Details for yellow card 6.</p></div>
+</div>
 </div>
 
 <script type="module">
