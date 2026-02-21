@@ -175,6 +175,10 @@ body.light #themeToggle {
   background: var(--yellow-highlight);
 }
 
+  body.light .card.yellow {
+  border: 1px solid var(--yellow-highlight);
+}
+
 /* Dragging */
 .dragging {
   position: absolute;
@@ -452,10 +456,14 @@ submitBtn.addEventListener('click', async () => {
   const qSnap = await getDocs(query(collection(db, "submissions"), where("name", "==", name)));
   if (!qSnap.empty) { alert("Someone already used this name!"); return; }
 
-  const priorities = [
-    ...Array.from(container.children),
-    ...Array.from(yellowContainer.children)
-  ].map(c => c.querySelector('h3').textContent);
+  const priorities = Array.from(container.children).map(c => c.querySelector('h3').textContent);
+  const yellowPriorities = Array.from(yellowContainer.children).map(c => c.querySelector('h3').textContent);
+  
+  await addDoc(collection(db, "submissions"), { 
+  name, 
+  priorities, 
+  yellowPriorities 
+});
   await addDoc(collection(db, "submissions"), { name, priorities });
   alert(`Thanks ${name}! Your priorities were submitted.`);
   userNameInput.value = '';
