@@ -1,120 +1,167 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>12 Card Ranking</title>
+<meta charset="UTF-8">
+<title>12 Card Ranking - Smooth Drag</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    padding: 40px;
+    user-select: none; /* Prevent text selection */
+  }
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      padding: 40px;
-    }
+  h1 { margin-bottom: 10px; }
 
-    h1 {
-      margin-bottom: 10px;
-    }
+  .card-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 400px;
+    position: relative;
+  }
 
-    .card-container {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      max-width: 400px;
-      margin-top: 30px;
-    }
+  .card {
+    position: relative;
+    padding: 20px;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease;
+  }
 
-    .card {
-      position: relative;
-      padding: 20px;
-      border-radius: 12px;
-      background: white;
-      cursor: grab;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-    }
+  .rank {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-weight: bold;
+    font-size: 18px;
+    background: #222;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 8px;
+  }
 
-    .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 14px rgba(0,0,0,0.12);
-    }
-
-    .card:active {
-      cursor: grabbing;
-      opacity: 0.6;
-    }
-
-    .rank {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-weight: bold;
-      font-size: 18px;
-      background: #222;
-      color: white;
-      padding: 4px 8px;
-      border-radius: 8px;
-    }
-  </style>
+  .dragging {
+    position: absolute;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0.95;
+    width: 400px;
+    box-shadow: 0 15px 25px rgba(0,0,0,0.25);
+    transition: none;
+  }
+</style>
 </head>
-
 <body>
 
-  <h1>Rank These Items</h1>
-  <p>Drag to reorder. 1 = Most Important.</p>
+<h1>Rank These Items</h1>
+<p>Drag to reorder. 1 = Most Important.</p>
 
-  <div class="card-container" id="cardContainer">
+<div class="card-container" id="cardContainer">
+  <div class="card"><div class="rank"></div><h3>Card 1</h3><p>I don’t know what to put here!</p></div>
+  <div class="card"><div class="rank"></div><h3>Card 2</h3><p>Description text here.</p></div>
+  <div class="card"><div class="rank"></div><h3>Card 3</h3><p>Description text here.</p></div>
+  <div class="card"><div class="rank"></div><h3>Card 4</h3><p>Description text here.</p></div>
+  <div class="card"><div class="rank"></div><h3>Card 5</h3><p>What’s this for?</p></div>
+  <div class="card"><div class="rank"></div><h3>Card 6</h3><p>Description text here.</p></div>
+  <div class="card"><div class="rank"></div><h3>Card 7</h3><p>Description text here.</p></div>
+  <div class="card"><div class="rank"></div><h3>Card 8</h3><p>Hi!!!!</p></div>
+  <div class="card"><div class="rank"></div><h3>Card 9</h3><p>Description text here.</p></div>
+  <div class="card"><div class="rank"></div><h3>Card 10</h3><p>Description text here.</p></div>
+  <div class="card"><div class="rank"></div><h3>Card 11</h3><p>Description text here.</p></div>
+  <div class="card"><div class="rank"></div><h3>Card 12</h3><p>Description text here.</p></div>
+</div>
 
-    <div class="card" draggable="true"><div class="rank"></div><h3>Card 1</h3><p>I dont know what to put here!.</p></div>
-    <div class="card" draggable="true"><div class="rank"></div><h3>Card 2</h3><p>Description text here.</p></div>
-    <div class="card" draggable="true"><div class="rank"></div><h3>Card 3</h3><p>Description text here.</p></div>
-    <div class="card" draggable="true"><div class="rank"></div><h3>Card 4</h3><p>Description text here.</p></div>
-    <div class="card" draggable="true"><div class="rank"></div><h3>Card 5</h3><p>Whats this for?</p></div>
-    <div class="card" draggable="true"><div class="rank"></div><h3>Card 6</h3><p>Description text here.</p></div>
-    <div class="card" draggable="true"><div class="rank"></div><h3>Card 7</h3><p>Description text here.</p></div>
-    <div class="card" draggable="true"><div class="rank"></div><h3>Card 8</h3><p>Hi!!!!</p></div>
-    <div class="card" draggable="true"><div class="rank"></div><h3>Card 9</h3><p>Description text here.</p></div>
-    <div class="card" draggable="true"><div class="rank"></div><h3>Card 10</h3><p>Description text here.</p></div>
-    <div class="card" draggable="true"><div class="rank"></div><h3>Card 11</h3><p>Description text here.</p></div>
-    <div class="card" draggable="true"><div class="rank"></div><h3>Card 12</h3><p>Description text here.</p></div>
+<script>
+const container = document.getElementById('cardContainer');
+let dragged = null;
+let startY = 0;
+let mouseOffsetY = 0;
+let placeholderIndex = 0;
 
-  </div>
+function updateRanks() {
+  container.querySelectorAll('.card').forEach((card, i) => {
+    card.querySelector('.rank').textContent = i + 1;
+  });
+}
 
-  <script>
-    const container = document.getElementById("cardContainer");
-    let draggedItem = null;
+updateRanks();
 
-    function updateRanks() {
-      const cards = container.querySelectorAll(".card");
-      cards.forEach((card, index) => {
-        card.querySelector(".rank").textContent = index + 1;
-      });
-    }
+// Store the initial top positions of all cards
+function getCardPositions() {
+  return Array.from(container.children).map(c => c.getBoundingClientRect().top);
+}
 
-    updateRanks();
+// Drag handlers
+container.querySelectorAll('.card').forEach(card => {
+  card.addEventListener('mousedown', e => {
+    dragged = card;
+    const rect = card.getBoundingClientRect();
+    mouseOffsetY = e.clientY - rect.top;
+    startY = rect.top;
 
-    container.addEventListener("dragstart", (e) => {
-      draggedItem = e.target.closest(".card");
-      setTimeout(() => draggedItem.style.display = "none", 0);
-    });
+    dragged.style.width = `${rect.width}px`;
+    dragged.style.height = `${rect.height}px`;
+    dragged.classList.add('dragging');
 
-    container.addEventListener("dragend", () => {
-      draggedItem.style.display = "block";
-      draggedItem = null;
-      updateRanks();
-    });
+    // Put dragged card in body to overlay
+    document.body.appendChild(dragged);
 
-    container.addEventListener("dragover", (e) => {
-      e.preventDefault();
-    });
+    // Save initial card order
+    cardPositions = getCardPositions();
+  });
+});
 
-    container.addEventListener("drop", (e) => {
-      e.preventDefault();
-      const targetCard = e.target.closest(".card");
-      if (targetCard && draggedItem !== targetCard) {
-        container.insertBefore(draggedItem, targetCard);
-      }
-    });
-  </script>
+document.addEventListener('mousemove', e => {
+  if (!dragged) return;
+
+  // Move dragged card exactly under cursor
+  dragged.style.top = `${e.clientY - mouseOffsetY}px`;
+  dragged.style.left = `${container.getBoundingClientRect().left}px`;
+
+  // Smoothly shift other cards
+  const cards = Array.from(container.children);
+  cards.forEach((c, index) => {
+    const rect = c.getBoundingClientRect();
+    const middle = rect.top + rect.height / 2;
+    let transformY = 0;
+
+    if (e.clientY < middle && index < cards.indexOf(dragged)) transformY = rect.height + 15;
+    if (e.clientY > middle && index > cards.indexOf(dragged)) transformY = - (rect.height + 15);
+
+    // Lerp-like smooth transition
+    const current = parseFloat(c.style.transform.replace(/translateY\((.*)px\)/, '$1')) || 0;
+    c.style.transform = `translateY(${current + (transformY - current) * 0.2}px)`;
+  });
+
+  // Determine placeholder index
+  const cardRects = cards.map(c => c.getBoundingClientRect());
+  placeholderIndex = cardRects.findIndex(r => e.clientY < r.top + r.height / 2);
+  if (placeholderIndex === -1) placeholderIndex = cards.length;
+});
+
+document.addEventListener('mouseup', () => {
+  if (!dragged) return;
+
+  // Insert dragged card into container
+  const children = Array.from(container.children);
+  container.insertBefore(dragged, children[placeholderIndex] || null);
+
+  dragged.classList.remove('dragging');
+  dragged.style.position = '';
+  dragged.style.width = '';
+  dragged.style.height = '';
+  dragged.style.top = '';
+  dragged.style.left = '';
+  dragged.style.transform = '';
+
+  // Reset transforms
+  container.querySelectorAll('.card').forEach(c => c.style.transform = '');
+  dragged = null;
+  updateRanks();
+});
+</script>
 
 </body>
 </html>
