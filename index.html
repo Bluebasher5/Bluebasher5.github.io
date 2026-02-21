@@ -490,6 +490,30 @@ function startDragYellow(e, card) {
   draggedYellow.style.zIndex = 1000;
   draggedYellow.style.left = `${rect.left + window.scrollX}px`;
   draggedYellow.style.top = `${rect.top + window.scrollY}px`;
+
+  // Fix for theme colors while dragging
+  if (document.body.classList.contains('light')) {
+    draggedYellow.style.setProperty('--yellow-bg-light', 'hsl(49 100% 90%)');
+    draggedYellow.style.setProperty('--yellow-bg', 'hsl(49 100% 85%)');
+    draggedYellow.style.setProperty('--yellow-bg-dark', 'hsl(49 81% 79%)');
+    draggedYellow.style.setProperty('--yellow-text', 'hsl(14 100% 4%)');
+    draggedYellow.style.setProperty('--yellow-text-muted', 'hsl(46 100% 9%)');
+    draggedYellow.style.setProperty('--yellow-highlight', 'hsl(50 100% 74%)');
+    draggedYellow.style.setProperty('--yellow-border', 'hsl(51 100% 18%)');
+    draggedYellow.style.setProperty('--yellow-border-muted', 'hsl(52 100% 24%)');
+    draggedYellow.style.setProperty('--yellow-primary', 'hsl(46 100% 9%)');
+  } else {
+    draggedYellow.style.removeProperty('--yellow-bg-light');
+    draggedYellow.style.removeProperty('--yellow-bg');
+    draggedYellow.style.removeProperty('--yellow-bg-dark');
+    draggedYellow.style.removeProperty('--yellow-text');
+    draggedYellow.style.removeProperty('--yellow-text-muted');
+    draggedYellow.style.removeProperty('--yellow-highlight');
+    draggedYellow.style.removeProperty('--yellow-border');
+    draggedYellow.style.removeProperty('--yellow-border-muted');
+    draggedYellow.style.removeProperty('--yellow-primary');
+  }
+
   draggedYellow.classList.add('dragging');
   document.body.appendChild(draggedYellow);
   e.preventDefault();
